@@ -26,12 +26,28 @@ html, body, #page {
 
     .jumbotron {
       background-color: #fff;
-      width: 45em;
+      width: 60em;
 
-      h1, h2, h3 {
+      h1, h2, h3, label {
         font-family: 'Oswald', sans-serif;
         font-weight: 400;
       }
+      
+      form {
+        margin-top: 2em;
+      }
+      
+      label {
+        color: #a69e9e;
+        text-transform: uppercase;
+      }
+    }
+  }
+  
+  .btn {
+    &.btn-primary {
+      background-color: #a69e9e;
+      border-color: darken(#a69e9e, 5%);
     }
   }
 }
