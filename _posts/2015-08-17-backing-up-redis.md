@@ -2,7 +2,7 @@
 ---
 Title: Backing Up Redis 
 Subtitle: Why and when you should back up your Redis data 
-Date: 2014-06-5 12:00 
+Date: 2014-06-5
 Tags: backup, persistence 
 Author: Bill Anderson 
 Summary: Backing up Redis is a complex question with both business and technical considerations. This guide will expose you to the basics of both aspects to help you determine if you need to back up your Redis, and if so what to consider when designing or choosing a solution.  
