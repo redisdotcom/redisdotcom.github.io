@@ -4,7 +4,7 @@ title: Top 5 Redis use cases
 author: joeengel
 ---
 
-In this post, we'll explain some of the most common Redis use cases and different characteritics that are influencing these choices.
+In this post, we'll explain some of the most common Redis use cases and different characteristics that are influencing these choices.
 
 ### 1. Session Cache
 
