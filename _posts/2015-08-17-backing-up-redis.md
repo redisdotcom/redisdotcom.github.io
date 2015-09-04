@@ -27,7 +27,7 @@ The first mode to consider is the server process dying, either through fault or 
 
 #### Host Failure
 
-In this scenario the host your Redis service is running on dies. Be it through kernel panic, DoS, tripping on a power or network cable, or even a truck running into the data center, the host is offline. Another possibility is the Linux OOM Killer killing Redis because the system is in dire need of memory space and Redis is using it.
+In this scenario the host your Redis service is running on dies. Be it through kernel panic, DoS, tripping on a power or network cable, or even a truck running into the data center, the host is offline. Another possibility is the Linux OOM Killer killing Redis because the system is in dire need of memory space and Redis is using it, [although this can be addressed](http://backdrift.org/oom-killer-how-to-create-oom-exclusions-in-linux) and doesn't necessarily result in data loss / unavailability.
 
 These two base cases form the root of all scenarios, so we will look at how to address these at the fundamental level.
 
@@ -35,11 +35,11 @@ These two base cases form the root of all scenarios, so we will look at how to a
 
 Redis has a native replication capability. In this setup your data is replicated as it changes to one or more "slave servers" - servers which exist to be ready to become authoritative or be ready to provide the data for disaster recovery and can also be use for distributing read-only operations.  For more information see [Redis' replication documentatation](http://redis.io/topics/replication).
 
-This option is one of the most simple among our choices. It is built into Redis and only requires a single additional process. It is also the quickest for recovery as you can point clients to the slave or, even better, change the backend node your load balancer sends traffic to. For managing this automatically, you can combine itthis setup with [Redis' Sentinel mode](http://redis.io/topics/sentinel).
+This option is one of the most simple among our choices. It is built into Redis and only requires a single additional process. It is also the quickest for recovery as you can point clients to the slave or, even better, change the backend node your load balancer sends traffic to. For managing this automatically, you can combine this setup with [Redis' Sentinel mode](http://redis.io/topics/sentinel).
 
-The absolute minimum way to implement this is to have a second instance running on a different port, socket, or IP in the same node configured to replicate the master process' data. This would only protect against someone or something killing the master process, doing nothing for the host failure mode.
+The absolute minimal way to implement this is to have a second instance running on a different port, socket, or IP in the same node configured to replicate the master process' data. This would only protect against someone or something killing the master process, doing nothing for the host failure mode.
 
-By placing the replicant on a different node you provide protection against host failure. At the minimum level this is all still in memory only.
+By placing the replicant on a different node one can provide protection against host failure.
 
 ### Option 2: Disk Persistence
 
@@ -53,9 +53,9 @@ This is a simple combination of the prior options. It provides a means of having
 
 Now we get into highly paranoid levels of backup. In this scenario you spread your data across several replicants, likely running in different physical locations, with replicants persisting their data to a file on disk; then we take that file from each replicant and copy it to yet somewhere else. This last location could be some cloud storage provider, yet more systems in yet additional geographical locations, or even tape. At this point you are usually doing this for archival purposes rather than standard recovery (or general paranoia).
 
-One aspect of this level of backups is managing multiple slave backups. If you have several slaves and are backing them all up, which one is the "correct" one to restore if you need to do a restore? It is not guaranteed that they will all be identical as the individual backups on each slave may not happen at precisely the same time. This brings some additional considerations when doing this, and you'll want to figure those out prior to the day you need to restore from this.
+One aspect of this level of backups is managing multiple slave backups. If you have several slaves and are protecting each one, which one is the "correct" one to restore if you need to do a restore? There isn't the concept of a 'canonical' source.  It is not guaranteed that they will all be identical as the individual backups on each slave may not happen at precisely the same time. This brings some additional considerations when using this method, and you'll want to figure those out prior to the day you need to restore from this.
 
-You may have noticed this list has increased in resiliency as I went along. It also happens to coincide with an increase in complexity and cost. When determining which of these options to choose remember to bias toward the minimum you need; you can add more if and when your needs grow.
+You may have noticed this list has increased in resiliency as it continues. It also happens to coincide with an increase in complexity and cost. When determining which of these options to choose remember to bias toward the minimum needed; one can add more if and when needs grow.
 
 ### OK, Which Option is Right For Me?
 
@@ -69,7 +69,7 @@ It is not uncommon for leadership or customers to react to the question of "How 
 
 For example if we say we can tolerate no more than one second of data loss, yet it takes more than 10 seconds to save the data. Now we have an issue - you simply can not save the data fast enough to meet the requirements. Imagine a slider. On the left end you have the DLW, and the right the DPW.
 
-The larger the DPW, the larger the DLW will have to be. So you move the slider to the left. On the other hand, 
+The larger the DPW, the larger the DLW will have to be. So you move the slider to the left. On the other hand,
 the larger the DLW, the more room you have in persistence so when this is important you move the slider to the right. You can't move the slider to both ends at the same time, so you must find the balance between the ideals. This is where knowing your data size and availability requirements will come into play.
 
 ### How Often Do You Need Backups?
