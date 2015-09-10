@@ -35,9 +35,9 @@ These two base cases form the root of all scenarios, so we will look at how to a
 
 Redis has a native replication capability. In this setup your data is replicated as it changes to one or more "slave servers" - servers which exist to be ready to become authoritative or be ready to provide the data for disaster recovery and can also be use for distributing read-only operations.  For more information see [Redis' replication documentatation](http://redis.io/topics/replication).
 
-This option is one of the most simple among our choices. It is built into Redis and only requires a single additional process. It is also the quickest for recovery as you can point clients to the slave or, even better, change the backend node your load balancer sends traffic to. For managing this automatically, you can combine itthis setup with [Redis' Sentinel mode](http://redis.io/topics/sentinel).
+This option is one of the most simple among our choices. It is built into Redis and only requires a single additional process. It is also the quickest for recovery as you can point clients to the slave or, even better, change the backend node your load balancer sends traffic to. For managing this automatically, you can combine this setup with [Redis' Sentinel mode](http://redis.io/topics/sentinel).
 
-The absolute minimum way to implement this is to have a second instance running on a different port, socket, or IP in the same node configured to replicate the master process' data. This would only protect against someone or something killing the master process, doing nothing for the host failure mode.
+The minimal way to implement this is to have a second instance running on a different port, socket, or IP in the same node configured to replicate the master process' data. This would only protect against someone or something killing the master process, doing nothing for the host failure mode.
 
 By placing the replicant on a different node you provide protection against host failure. At the minimum level this is all still in memory only.
 
